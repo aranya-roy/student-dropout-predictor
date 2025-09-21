@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload CSV - Student Dropout Predictor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a1a 50%, #0f0f0f 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: radial-gradient(circle at 20% 80%, rgba(40, 167, 69, 0.1) 0%, transparent 50%),
+                              radial-gradient(circle at 80% 20%, rgba(40, 167, 69, 0.08) 0%, transparent 50%);
+            animation: float 6s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        .upload-container {
+            background: rgba(30, 30, 30, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 50px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 
+                        0 0 80px rgba(40, 167, 69, 0.15),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            text-align: center;
+            width: 500px;
+            max-width: 90%;
+            position: relative;
+        }
+
+        .upload-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 0 20px rgba(40, 167, 69, 0.3));
+        }
+
+        h1 {
+            font-size: 28px;
+            margin-bottom: 15px;
+            font-weight: 300;
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            color: #b0b0b0;
+            margin-bottom: 35px;
+            font-size: 16px;
+            font-weight: 300;
+            line-height: 1.5;
+        }
+
+        .upload-section {
+            margin-bottom: 30px;
+            text-align: left;
+        }
+
+        .upload-section label {
+            display: block;
+            margin-bottom: 12px;
+            color: #e0e0e0;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        input[type="file"] {
+            width: 100%;
+            height: 60px;
+            opacity: 0;
+            position: absolute;
+            cursor: pointer;
+        }
+
+        .file-input-display {
+            width: 100%;
+            height: 60px;
+            padding: 16px 20px;
+            border: 2px dashed rgba(40, 167, 69, 0.3);
+            border-radius: 12px;
+            background: rgba(40, 167, 69, 0.05);
+            color: #28a745;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .file-input-display:hover {
+            border-color: #28a745;
+            background: rgba(40, 167, 69, 0.1);
+        }
+
+        .file-input-display .upload-text {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .file-requirements {
+            margin-top: 12px;
+            font-size: 14px;
+            color: #999;
+            text-align: center;
+        }
+
+        button {
+            width: 100%;
+            padding: 18px;
+            margin-top: 20px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #007BFF 0%, #0056b3 100%);
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 8px 25px rgba(0, 123, 255, 0.3);
+        }
+
+        button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        button:hover::before {
+            left: 100%;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 35px rgba(0, 123, 255, 0.4);
+        }
+
+        button:disabled {
+            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: 0 4px 15px rgba(108, 117, 125, 0.2);
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            margin-top: 25px;
+            padding: 10px 20px;
+            color: #28a745;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .back-link:hover {
+            background: rgba(40, 167, 69, 0.1);
+            color: #34ce57;
+        }
+
+        .back-link .icon {
+            margin-right: 8px;
+            font-size: 16px;
+        }
+
+        @media (max-width: 480px) {
+            .upload-container {
+                padding: 40px 30px;
+                margin: 20px;
+            }
+            
+            .upload-icon {
+                font-size: 36px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+            
+            .file-input-display {
+                height: 50px;
+                font-size: 14px;
+            }
+            
+            button {
+                padding: 16px;
+                font-size: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="upload-container">
+        <div class="upload-icon">📊</div>
+        <h1>Upload Student Data</h1>
+        <p class="subtitle">Upload a CSV file containing student information to generate dropout risk analysis</p>
+        
+        <form action="/admin-output" method="post" enctype="multipart/form-data">
+            <div class="upload-section">
+                <label for="csvfile">Select CSV File</label>
+                <div class="file-input-wrapper">
+                    <input type="file" id="csvfile" name="csvfile" accept=".csv" required>
+                    <div class="file-input-display">
+                        <div class="upload-text">
+                            <span>📁</span>
+                            <span>Click to select CSV file</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="file-requirements">
+                    Supported format: CSV (.csv) | Max file size: 10MB
+                </div>
+            </div>
+            
+            <button type="submit" id="generateBtn">
+                <span>✨</span> Generate Analysis Report
+            </button>
+        </form>
+        
+        <a href="/" class="back-link">
+            <span class="icon">←</span>
+            Back to Home
+        </a>
+    </div>
+
+    <script>
+        const fileInput = document.getElementById('csvfile');
+        const fileDisplay = document.querySelector('.file-input-display');
+        const generateBtn = document.getElementById('generateBtn');
+
+        fileInput.addEventListener('change', function() {
+            if (this.files && this.files[0]) {
+                const fileName = this.files[0].name;
+                fileDisplay.innerHTML = `
+                    <div class="upload-text">
+                        <span>✓</span>
+                        <span>${fileName}</span>
+                    </div>
+                `;
+                fileDisplay.style.borderColor = '#28a745';
+                fileDisplay.style.color = '#28a745';
+                generateBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>

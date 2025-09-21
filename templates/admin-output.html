@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Data - Student Dropout Predictor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a1a 50%, #0f0f0f 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            padding: 20px 0;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: radial-gradient(circle at 20% 80%, rgba(40, 167, 69, 0.08) 0%, transparent 50%),
+                              radial-gradient(circle at 80% 20%, rgba(0, 123, 255, 0.08) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px 0;
+        }
+
+        .header-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 0 20px rgba(0, 123, 255, 0.3));
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: 300;
+            background: linear-gradient(135deg, #007BFF 0%, #0056b3 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #b0b0b0;
+            font-size: 16px;
+            font-weight: 300;
+        }
+
+        .table-container {
+            background: rgba(30, 30, 30, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 
+                        0 0 80px rgba(0, 123, 255, 0.1),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .table-wrapper::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        .table-wrapper::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+
+        .table-wrapper::-webkit-scrollbar-thumb {
+            background: rgba(0, 123, 255, 0.5);
+            border-radius: 4px;
+        }
+
+        .table-wrapper::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 123, 255, 0.7);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            min-width: 800px;
+        }
+
+        th, td {
+            padding: 16px 12px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 14px;
+        }
+
+        th {
+            background: linear-gradient(135deg, #007BFF 0%, #0056b3 100%);
+            color: white;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 0.5px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        th:first-child {
+            border-top-left-radius: 12px;
+        }
+
+        th:last-child {
+            border-top-right-radius: 12px;
+        }
+
+        tbody tr {
+            transition: all 0.3s ease;
+        }
+
+        tbody tr:hover {
+            background: rgba(0, 123, 255, 0.1);
+            transform: scale(1.01);
+        }
+
+        tbody tr:nth-child(even) {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        tbody tr:nth-child(odd) {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        td {
+            color: #e0e0e0;
+        }
+
+        /* Risk level styling */
+        td:nth-child(7) {
+            font-weight: 600;
+        }
+
+        td:nth-child(7):contains("High") {
+            color: #ff4757;
+        }
+
+        td:nth-child(7):contains("Medium") {
+            color: #ffa502;
+        }
+
+        td:nth-child(7):contains("Low") {
+            color: #2ed573;
+        }
+
+        .stats-bar {
+            display: flex;
+            justify-content: space-around;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.03);
+            margin-bottom: 30px;
+            border-radius: 15px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .high-risk {
+            color: #ff4757;
+        }
+
+        .medium-risk {
+            color: #ffa502;
+        }
+
+        .low-risk {
+            color: #2ed573;
+        }
+
+        .total-students {
+            color: #007BFF;
+        }
+
+        .actions {
+            padding: 30px;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.03);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: #e0e0e0;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 15px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+            
+            .header-icon {
+                font-size: 36px;
+            }
+            
+            .stats-bar {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .btn-group {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 200px;
+                justify-content: center;
+            }
+            
+            th, td {
+                padding: 12px 8px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-icon">📊</div>
+            <h1>Student Analysis Report</h1>
+            <p class="subtitle">Dropout risk assessment and academic insights</p>
+        </div>
+
+        <div class="table-container">
+            <div class="stats-bar">
+                <div class="stat-item">
+                    <div class="stat-number total-students" id="total-count">-</div>
+                    <div class="stat-label">Total Students</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number high-risk" id="high-risk-count">-</div>
+                    <div class="stat-label">High Risk</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number medium-risk" id="medium-risk-count">-</div>
+                    <div class="stat-label">Medium Risk</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number low-risk" id="low-risk-count">-</div>
+                    <div class="stat-label">Low Risk</div>
+                </div>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Roll Number</th>
+                            <th>Name</th>
+                            <th>CGPA</th>
+                            <th>Attendance</th>
+                            <th>Disciplinary Issues</th>
+                            <th>Medical Issues</th>
+                            <th>Risk Level</th>
+                            <th>Risk Percentage</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for student in all_students %}
+                        <tr>
+                            <td><strong>{{ student[0] }}</strong></td>
+                            <td>{{ student[1] }}</td>
+                            <td>{{ student[2] }}</td>
+                            <td>{{ student[3] }}%</td>
+                            <td>{{ student[4] }}</td>
+                            <td>{{ student[5] }}</td>
+                            <td class="risk-level">{{ student[6] }}</td>
+                            <td><strong>{{ student[7] }}%</strong></td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="actions">
+                <div class="btn-group">
+                    <a href="/" class="btn btn-primary">
+                        <span>🏠</span>
+                        Back to Home
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Calculate statistics
+            const rows = document.querySelectorAll('tbody tr');
+            let totalStudents = rows.length;
+            let highRisk = 0, mediumRisk = 0, lowRisk = 0;
+
+            rows.forEach(row => {
+                const riskCell = row.querySelector('.risk-level');
+                if (riskCell) {
+                    const risk = riskCell.textContent.trim().toLowerCase();
+                    if (risk.includes('high')) {
+                        highRisk++;
+                        riskCell.style.color = '#ff4757';
+                        riskCell.style.fontWeight = 'bold';
+                    } else if (risk.includes('medium')) {
+                        mediumRisk++;
+                        riskCell.style.color = '#ffa502';
+                        riskCell.style.fontWeight = 'bold';
+                    } else if (risk.includes('low')) {
+                        lowRisk++;
+                        riskCell.style.color = '#2ed573';
+                        riskCell.style.fontWeight = 'bold';
+                    }
+                }
+            });
+
+            // Update statistics display
+            document.getElementById('total-count').textContent = totalStudents;
+            document.getElementById('high-risk-count').textContent = highRisk;
+            document.getElementById('medium-risk-count').textContent = mediumRisk;
+            document.getElementById('low-risk-count').textContent = lowRisk;
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dropout Predictor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a1a 50%, #0f0f0f 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Animated background particles */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.1) 0%, transparent 50%),
+                              radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.1) 0%, transparent 50%),
+                              radial-gradient(circle at 40% 40%, rgba(120, 255, 198, 0.05) 0%, transparent 50%);
+            animation: float 6s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        .container {
+            text-align: center;
+            background: rgba(30, 30, 30, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 60px 50px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 
+                        0 0 80px rgba(0, 123, 255, 0.1),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            position: relative;
+            z-index: 1;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .logo {
+            font-size: 48px;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(0 0 20px rgba(102, 126, 234, 0.3));
+        }
+
+        h1 {
+            margin-bottom: 15px;
+            color: #ffffff;
+            font-size: 28px;
+            font-weight: 300;
+            letter-spacing: 1px;
+        }
+
+        .subtitle {
+            color: #b0b0b0;
+            margin-bottom: 40px;
+            font-size: 16px;
+            font-weight: 300;
+            line-height: 1.6;
+        }
+
+        .portal-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .portal-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 18px 35px;
+            font-size: 16px;
+            font-weight: 500;
+            color: #ffffff;
+            background: linear-gradient(135deg, #007BFF 0%, #0056b3 100%);
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            text-decoration: none;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 8px 25px rgba(0, 123, 255, 0.3);
+        }
+
+        .portal-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .portal-btn:hover::before {
+            left: 100%;
+        }
+
+        .portal-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 35px rgba(0, 123, 255, 0.4);
+        }
+
+        .admin-btn {
+            background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+            box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3);
+        }
+
+        .admin-btn:hover {
+            box-shadow: 0 12px 35px rgba(40, 167, 69, 0.4);
+        }
+
+        .portal-btn .icon {
+            margin-right: 12px;
+            font-size: 20px;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 40px 30px;
+                margin: 20px;
+            }
+            
+            .logo {
+                font-size: 36px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+            
+            .portal-btn {
+                padding: 16px 30px;
+                font-size: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">🎓</div>
+        <h1>Student Dropout Predictor</h1>
+        <p class="subtitle">Advanced analytics to identify at-risk students and support their academic success</p>
+        
+        <div class="portal-buttons">
+            <a href="/admin" class="portal-btn admin-btn">
+                <span class="icon">👨‍💼</span>
+                Admin Portal
+            </a>
+            <a href="/student" class="portal-btn">
+                <span class="icon">👨‍🎓</span>
+                Student Portal
+            </a>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Details - Student Dropout Predictor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a1a 50%, #0f0f0f 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            position: relative;
+            padding: 20px 0;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: radial-gradient(circle at 20% 80%, rgba(0, 123, 255, 0.1) 0%, transparent 50%),
+                              radial-gradient(circle at 80% 20%, rgba(0, 204, 255, 0.08) 0%, transparent 50%);
+            animation: float 6s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        .details-container {
+            background: rgba(30, 30, 30, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 50px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 
+                        0 0 80px rgba(0, 123, 255, 0.15),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            width: 500px;
+            max-width: 90%;
+            position: relative;
+        }
+
+        .profile-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 25px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .profile-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 0 20px rgba(0, 123, 255, 0.3));
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 300;
+            background: linear-gradient(135deg, #00ccff 0%, #007BFF 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            color: #b0b0b0;
+            font-size: 14px;
+            font-weight: 300;
+        }
+
+        .details-grid {
+            display: grid;
+            gap: 25px;
+        }
+
+        .detail-item {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .detail-item:hover {
+            background: rgba(255, 255, 255, 0.06);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .detail-label {
+            font-size: 14px;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .detail-value {
+            font-size: 18px;
+            color: #e0e0e0;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .detail-icon {
+            font-size: 20px;
+            opacity: 0.8;
+        }
+
+        /* Special styling for different data types */
+        .detail-item.roll-number .detail-value {
+            color: #00ccff;
+        }
+
+        .detail-item.cgpa .detail-value {
+            color: #28a745;
+        }
+
+        .detail-item.attendance .detail-value {
+            color: #ffc107;
+        }
+
+        .actions {
+            margin-top: 40px;
+            padding-top: 25px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 14px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+            color: white;
+            box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: #e0e0e0;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 12px 35px rgba(40, 167, 69, 0.4);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        @media (max-width: 480px) {
+            .details-container {
+                padding: 40px 30px;
+                margin: 20px;
+            }
+            
+            .profile-icon {
+                font-size: 36px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+            
+            .detail-value {
+                font-size: 16px;
+            }
+            
+            .actions {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 200px;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="details-container">
+        <div class="profile-header">
+            <div class="profile-icon">👨‍🎓</div>
+            <h1>Student Profile</h1>
+            <p class="subtitle">Academic information and details</p>
+        </div>
+        
+        <div class="details-grid">
+            <div class="detail-item roll-number">
+                <div class="detail-label">Roll Number</div>
+                <div class="detail-value">
+                    <span class="detail-icon">🎫</span>
+                    <span>{{rollnum}}</span>
+                </div>
+            </div>
+            
+            <div class="detail-item">
+                <div class="detail-label">Full Name</div>
+                <div class="detail-value">
+                    <span class="detail-icon">👤</span>
+                    <span>{{name}}</span>
+                </div>
+            </div>
+            
+            <div class="detail-item cgpa">
+                <div class="detail-label">CGPA</div>
+                <div class="detail-value">
+                    <span class="detail-icon">🏆</span>
+                    <span>{{cgpa}}</span>
+                </div>
+            </div>
+            
+            <div class="detail-item attendance">
+                <div class="detail-label">Attendance</div>
+                <div class="detail-value">
+                    <span class="detail-icon">📅</span>
+                    <span>{{attendance}}%</span>
+                </div>
+            </div>
+            
+            <div class="detail-item">
+                <div class="detail-label">Disciplinary Issues</div>
+                <div class="detail-value">
+                    <span class="detail-icon">⚠️</span>
+                    <span>{{disciplinary_issues}}</span>
+                </div>
+            </div>
+            
+            <div class="detail-item">
+                <div class="detail-label">Medical Issues</div>
+                <div class="detail-value">
+                    <span class="detail-icon">🏍️</span>
+                    <span>{{medical_issues}}</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="actions">
+            <button id="chatToggle" class="btn btn-secondary" style="margin-right: 15px;">
+                <span>💬</span>
+                Academic Counselor
+            </button>
+            <a href="/" class="btn btn-primary">
+                <span>🏠</span>
+                Back to Home
+            </a>
+        </div>
+    </div>
+
+    <!-- Chatbot Interface -->
+    <div id="chatbot" style="display: none; position: fixed; bottom: 20px; right: 20px; width: 350px; height: 500px; background: rgba(30, 30, 30, 0.95); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 15px; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6); z-index: 1000; display: flex; flex-direction: column;">
+        <div style="padding: 15px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); display: flex; justify-content: space-between; align-items: center;">
+            <h3 style="color: #00ccff; margin: 0; font-size: 16px;">🤖 Academic Counselor</h3>
+            <button id="chatClose" style="background: none; border: none; color: #999; font-size: 18px; cursor: pointer;">×</button>
+        </div>
+        <div id="chatMessages" style="flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px;">
+            <div class="bot-message" style="background: rgba(0, 204, 255, 0.1); padding: 10px; border-radius: 10px; border-left: 3px solid #00ccff;">
+                <div style="color: #00ccff; font-size: 12px; margin-bottom: 5px;">Academic Counselor</div>
+                <div style="color: #e0e0e0; font-size: 14px;">Hello {{name}}! I'm here to help you with any academic concerns or questions about your studies. How are you feeling about your current academic progress?</div>
+            </div>
+        </div>
+        <div style="padding: 15px; border-top: 1px solid rgba(255, 255, 255, 0.1);">
+            <div style="display: flex; gap: 10px;">
+                <input type="text" id="chatInput" placeholder="Type your message..." style="flex: 1; padding: 10px; border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; background: rgba(44, 44, 44, 0.8); color: #fff; font-size: 14px;">
+                <button id="chatSend" style="padding: 10px 15px; background: linear-gradient(135deg, #00ccff 0%, #007BFF 100%); border: none; border-radius: 8px; color: white; cursor: pointer; font-size: 14px;">Send</button>
+            </div>
+            <div id="chatStatus" style="color: #999; font-size: 12px; margin-top: 5px; text-align: center;"></div>
+        </div>
+    </div>
+
+    <script>
+        const chatToggle = document.getElementById('chatToggle');
+        const chatbot = document.getElementById('chatbot');
+        const chatClose = document.getElementById('chatClose');
+        const chatMessages = document.getElementById('chatMessages');
+        const chatInput = document.getElementById('chatInput');
+        const chatSend = document.getElementById('chatSend');
+        const chatStatus = document.getElementById('chatStatus');
+
+        let chatHistory = [];
+        const rollNum = {{rollnum}};
+
+        chatToggle.addEventListener('click', () => {
+            chatbot.style.display = chatbot.style.display === 'none' ? 'flex' : 'none';
+        });
+
+        chatClose.addEventListener('click', () => {
+            chatbot.style.display = 'none';
+        });
+
+        function addMessage(content, isBot = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = isBot ? 'bot-message' : 'user-message';
+            
+            if (isBot) {
+                messageDiv.style.cssText = 'background: rgba(0, 204, 255, 0.1); padding: 10px; border-radius: 10px; border-left: 3px solid #00ccff;';
+                messageDiv.innerHTML = `
+                    <div style="color: #00ccff; font-size: 12px; margin-bottom: 5px;">Academic Counselor</div>
+                    <div style="color: #e0e0e0; font-size: 14px;">${content}</div>
+                `;
+            } else {
+                messageDiv.style.cssText = 'background: rgba(40, 167, 69, 0.1); padding: 10px; border-radius: 10px; border-right: 3px solid #28a745; margin-left: 20px;';
+                messageDiv.innerHTML = `
+                    <div style="color: #28a745; font-size: 12px; margin-bottom: 5px;">You</div>
+                    <div style="color: #e0e0e0; font-size: 14px;">${content}</div>
+                `;
+            }
+            
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        async function sendMessage(message) {
+            if (!message.trim()) return;
+            
+            addMessage(message);
+            chatHistory.push({role: 'user', content: message});
+            
+            chatInput.value = '';
+            chatStatus.textContent = 'Thinking...';
+            chatSend.disabled = true;
+            
+            try {
+                const response = await fetch('http://localhost:5001/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: message,
+                        roll_num: rollNum,
+                        history: chatHistory
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.response) {
+                    addMessage(data.response, true);
+                    chatHistory.push({role: 'assistant', content: data.response});
+                } else {
+                    addMessage('I apologize, but I\'m having trouble responding right now. Please try again or contact your academic advisor.', true);
+                }
+                
+            } catch (error) {
+                console.error('Chat error:', error);
+                addMessage('I\'m sorry, I\'m having connection issues. Please make sure the chatbot service is running and try again.', true);
+            }
+            
+            chatStatus.textContent = '';
+            chatSend.disabled = false;
+        }
+
+        chatSend.addEventListener('click', () => {
+            sendMessage(chatInput.value);
+        });
+
+        chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendMessage(chatInput.value);
+            }
+        });
+
+        // Mobile responsiveness
+        if (window.innerWidth <= 480) {
+            chatbot.style.cssText += 'width: calc(100vw - 40px); height: 400px; bottom: 10px; right: 10px; left: 10px;';
+        }
+    </script>
+</body>
+</html>
